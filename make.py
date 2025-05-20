@@ -44,15 +44,21 @@ def deploy():
     pxsol.log.debugln(f'main: deploy program')
     with open('target/deploy/pxsol_ss.so', 'rb') as f:
         data = bytearray(f.read())
-    prog = user.program_deploy(data)
-    pxsol.log.debugln(f'main: deploy program pubkey={prog}')
-    info_save('pubkey', prog.base58())
+    prog_pubkey = user.program_deploy(data)
+    pxsol.log.debugln(f'main: deploy program pubkey={prog_pubkey}')
+    info_save('pubkey', prog_pubkey.base58())
 
 
-def hi():
+def save():
     user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
-    prog = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
-    rq = pxsol.core.Requisition(prog, [], bytearray())
+    prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
+    data_pubkey = prog_pubkey.derive_pda(user.pubkey.p)
+    rq = pxsol.core.Requisition(prog_pubkey, [], bytearray())
+    rq.account.append(pxsol.core.AccountMeta(user.pubkey, 3))
+    rq.account.append(pxsol.core.AccountMeta(data_pubkey, 1))
+    rq.account.append(pxsol.core.AccountMeta(pxsol.program.System.pubkey, 0))
+    rq.account.append(pxsol.core.AccountMeta(pxsol.program.SysvarRent.pubkey, 0))
+    rq.data = bytearray(b'The quick brown fox jumps over the lazy dog')
     tx = pxsol.core.Transaction.requisition_decode(user.pubkey, [rq])
     tx.message.recent_blockhash = pxsol.base58.decode(pxsol.rpc.get_latest_blockhash({})['blockhash'])
     tx.sign([user.prikey])
@@ -61,6 +67,14 @@ def hi():
     r = pxsol.rpc.get_transaction(txid, {})
     for e in r['meta']['logMessages']:
         print(e)
+
+
+def load():
+    user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
+    prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
+    data_pubkey = prog_pubkey.derive_pda(user.pubkey.p)
+    info = pxsol.rpc.get_account_info(data_pubkey.base58(), {})
+    print(base64.b64decode(info['data'][0]).decode())
 
 
 if __name__ == '__main__':
