@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs)]
+
 use solana_program::sysvar::Sysvar;
 
 solana_program::entrypoint!(process_instruction);
