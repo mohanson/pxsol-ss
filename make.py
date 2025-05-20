@@ -58,7 +58,7 @@ def save():
     rq.account.append(pxsol.core.AccountMeta(data_pubkey, 1))
     rq.account.append(pxsol.core.AccountMeta(pxsol.program.System.pubkey, 0))
     rq.account.append(pxsol.core.AccountMeta(pxsol.program.SysvarRent.pubkey, 0))
-    rq.data = bytearray(b'The quick brown fox jumps over the lazy dog')
+    rq.data = bytearray(args.args[1].encode())
     tx = pxsol.core.Transaction.requisition_decode(user.pubkey, [rq])
     tx.message.recent_blockhash = pxsol.base58.decode(pxsol.rpc.get_latest_blockhash({})['blockhash'])
     tx.sign([user.prikey])
