@@ -3,10 +3,6 @@ name = "pxsol-ss"
 version = "0.1.0"
 edition = "2021"
 
-[features]
-custom-heap = []
-custom-panic = []
-
 [lib]
 crate-type = ["cdylib", "lib"]
 
