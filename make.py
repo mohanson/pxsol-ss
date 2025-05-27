@@ -49,6 +49,17 @@ def deploy():
     info_save('pubkey', prog_pubkey.base58())
 
 
+def update():
+    # Update program
+    user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
+    prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
+    call('cargo build-sbf -- -Znext-lockfile-bump')
+    pxsol.log.debugln(f'main: update mana')
+    with open('target/deploy/pxsol_ss.so', 'rb') as f:
+        data = bytearray(f.read())
+    user.program_update(prog_pubkey, data)
+
+
 def save():
     user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
     prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
