@@ -62,7 +62,7 @@ def update():
 
 def save():
     user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
-    prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
+    prog_pubkey = pxsol.core.PubKey.base58_decode(info_load('pubkey'))
     data_pubkey = prog_pubkey.derive_pda(user.pubkey.p)
     rq = pxsol.core.Requisition(prog_pubkey, [], bytearray())
     rq.account.append(pxsol.core.AccountMeta(user.pubkey, 3))
@@ -82,7 +82,7 @@ def save():
 
 def load():
     user = pxsol.wallet.Wallet(pxsol.core.PriKey.base58_decode(args.prikey))
-    prog_pubkey = pxsol.core.PubKey(pxsol.base58.decode(info_load('pubkey')))
+    prog_pubkey = pxsol.core.PubKey.base58_decode(info_load('pubkey'))
     data_pubkey = prog_pubkey.derive_pda(user.pubkey.p)
     info = pxsol.rpc.get_account_info(data_pubkey.base58(), {})
     print(base64.b64decode(info['data'][0]).decode())
