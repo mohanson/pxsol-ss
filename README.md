@@ -8,6 +8,7 @@ A simple data storage contract that allows anyone to store data on the chain.
 Deployed on the local test chain:
 
 ```sh
+$ cargo build-sbf
 $ python make.py deploy
 # 2025/05/20 16:06:38 main: deploy program pubkey="T6vZUAQyiFfX6968XoJVmXxpbZwtnKfQbNNBYrcxkcp"
 ```
