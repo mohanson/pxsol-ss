@@ -15,12 +15,14 @@ pub fn process_instruction(
     let _ = solana_program::account_info::next_account_info(accounts_iter)?; // Program system
     let _ = solana_program::account_info::next_account_info(accounts_iter)?; // Program sysvar rent
 
-    let rent_exemption = solana_program::rent::Rent::get()?.minimum_balance(data.len());
-    let calculated_pda =
-        solana_program::pubkey::Pubkey::find_program_address(&[&account_user.key.to_bytes()], program_id);
-    assert_eq!(account_data.key, &calculated_pda.0); // Ensure the PDA is correct.
-    let bump_seed = calculated_pda.1;
+    // Check accounts permissons.
     assert!(account_user.is_signer);
+    let account_data_calc =
+        solana_program::pubkey::Pubkey::find_program_address(&[&account_user.key.to_bytes()], program_id);
+    assert_eq!(account_data.key, &account_data_calc.0);
+
+    let rent_exemption = solana_program::rent::Rent::get()?.minimum_balance(data.len());
+    let bump = account_data_calc.1;
 
     // Data account is not initialized. Create an account and write data into it.
     if **account_data.try_borrow_lamports().unwrap() == 0 {
@@ -33,7 +35,7 @@ pub fn process_instruction(
                 program_id,
             ),
             accounts,
-            &[&[&account_user.key.to_bytes(), &[bump_seed]]],
+            &[&[&account_user.key.to_bytes(), &[bump]]],
         )?;
         account_data.data.borrow_mut().copy_from_slice(data);
         return Ok(());
