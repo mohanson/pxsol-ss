@@ -56,7 +56,7 @@ pub fn process_instruction(
         **account_data.lamports.borrow_mut() = rent_exemption;
     }
     // Realloc space.
-    account_data.resize(data.len())?;
+    account_data.realloc(data.len(), false)?;
     // Overwrite old data with new data.
     account_data.data.borrow_mut().copy_from_slice(data);
 

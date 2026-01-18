@@ -1,5 +1,5 @@
 [package]
-name = "pxsol-ss"
+name = "solana-storage"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,4 +7,12 @@ edition = "2021"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-solana-program = "2"
+solana-program = "1.18"
+
+[patch.crates-io]
+blake3 = { git = "https://github.com/BLAKE3-team/BLAKE3", tag = "1.5.5" }
+
+[features]
+custom-heap = []
+custom-panic = []
+
